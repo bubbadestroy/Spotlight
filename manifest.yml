@@ -1,0 +1,17 @@
+---
+applications:
+- name: scanner-ui
+  buildpacks:
+    - python_buildpack
+    - go_buildpack
+  disk_quota: 512M
+  timeout: 180
+  services:
+    - scanning-storage  # cf create-service s3 basic-sandbox scanning-storage
+  memory: 256M
+  instances: 1
+  random-route: true
+  env:
+    GOVERSION: go1.12
+    GOPACKAGENAME: site-scanning
+
