@@ -14,32 +14,6 @@ import (
 
 var bucket string
 
-// "s3": [
-//  {
-//   "binding_name": null,
-//   "credentials": {
-//    "access_key_id": "XXX",
-//    "additional_buckets": [],
-//    "bucket": "bucketname",
-//    "region": "us-gov-west-1",
-//    "secret_access_key": "YYYYYYYYYYYYYY",
-//    "uri": "s3://XXX:YYYYYYYYYYYYYY@s3-us-gov-west-1.amazonaws.com/bucketname"
-//   },
-//   "instance_name": "storage",
-//   "label": "s3",
-//   "name": "storage",
-//   "plan": "basic-sandbox",
-//   "provider": null,
-//   "syslog_drain_url": null,
-//   "tags": [
-//    "AWS",
-//    "S3",
-//    "object-storage"
-//   ],
-//   "volume_mounts": []
-//  }
-// ],
-
 func main() {
 	http.HandleFunc("/runscan", runScanHandler)
 	http.HandleFunc("/scans", scansHandler)
@@ -114,7 +88,7 @@ func runScanHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// run gsutil rsync to get the logs where they need to go
-	cmd := exec.Command("scan_engine.py", bucket)
+	cmd := exec.Command("scan_engine.sh", bucket)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("scan engine failure: %s %s\n", err.Error(), output)
