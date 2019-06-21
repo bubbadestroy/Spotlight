@@ -13,5 +13,4 @@ applications:
   random-route: true
   env:
     GOVERSION: go1.12
-    GOPACKAGENAME: site-scanning
-
+    GOPACKAGENAME: github.com/18F/site-scanning
