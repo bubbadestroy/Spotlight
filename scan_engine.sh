@@ -5,13 +5,16 @@
 # It also cleans up old scans (>30 days) to prevent clutter.
 #
 # It is meant to be run like so:
-#   cf run-task scanner-ui /app/scan_engine.sh -m 2048
+#   cf run-task scanner-ui /app/scan_engine.sh -m 2048M
 
 # This is where you add more scan types
 SCANTYPES="
 	200scanner
 	uswds2
 	pagedata
+"
+SCANTYPES="
+	200scanner
 "
 
 # This is where you set the repo/branch
@@ -65,6 +68,8 @@ pip3 install -r requirements-scanners.txt
 
 # get the list of domains
 wget -O /tmp/domains.csv https://github.com/GSA/data/raw/master/dotgov-domains/current-federal.csv
+# XXX temporary scan some more domains
+wget -O /tmp/moredomains.csv https://pulse.cio.gov/data/hosts/https.csv
 
 # execute the scans
 echo -n "Scan start: "
@@ -81,6 +86,14 @@ if ./scan /tmp/domains.csv --scan="$SCANLIST" ; then
 else
 	echo "scan of $SCANLIST errored out for some reason"
 fi
+
+# XXX temporary scan some more domains
+if ./scan /tmp/moredomains.csv --scan="$SCANLIST" ; then
+	echo "scan of $SCANLIST successful"
+else
+	echo "scan of $SCANLIST errored out for some reason"
+fi
+
 
 # add metadata and put scan results into ES
 ESURL=$(echo "$VCAP_SERVICES" | jq -r '.elasticsearch56[0].credentials.uri')
