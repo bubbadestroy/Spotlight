@@ -119,7 +119,7 @@ def get200query(indexbase, my200page, agency, domaintype, mimetype, query):
 		if my200page == ' all pages':
 			s = s.query("simple_query_string", query=query)
 		else:
-			field = 'data.' + deperiodize(my200page)
+			field = 'data.' + deperiodize(my200page) + '.' + status_code
 			s = s.query("simple_query_string", query=query, fields=[field])
 		if agency != 'all agencies':
 			agencyquery = '"' + agency + '"'
@@ -236,6 +236,7 @@ def search200csv(request):
 	fieldnames.remove('data')
 	for k,v in firsthit['data'].items():
 		fieldnames.append(periodize(k))
+		fieldnames.append(periodize(k) + ' final URL')
 	if 'pagedata' in fieldnames:
 		fieldnames.remove('pagedata')
 		for k,v in firsthit['pagedata'].items():
@@ -263,7 +264,8 @@ def search200csv(request):
 		scandata = scan['data']
 		del scan['data']
 		for k,v in scandata.items():
-			scan[periodize(k)] = v
+			scan[periodize(k)] = v['status_code']
+			scan[periodize(k) + ' final URL'] = v['final_url']
 
 		writer.writerow(scan)
 
@@ -300,7 +302,7 @@ def search200(request):
 	resultcodemap = {}
 	for i in s.scan():
 			for k,v in i.data.to_dict().items():
-				resultcodemap[v] = 1
+				resultcodemap[v.status_code] = 1
 	# make sure everybody is a string, then sort it
 	resultcodes = list(map(str, resultcodemap.keys()))
 	resultcodes.sort()

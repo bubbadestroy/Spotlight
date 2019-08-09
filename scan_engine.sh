@@ -14,7 +14,7 @@ SCANTYPES="
 	pagedata
 "
 SCANTYPES="
-	200scanner
+	uswds2
 "
 
 # This is where you set the repo/branch
