@@ -9,17 +9,13 @@
 
 # This is where you add more scan types
 SCANTYPES="
+	uswds2
 	200scanner
-	uswds2
-	pagedata
-"
-SCANTYPES="
-	uswds2
 "
 
 # This is where you set the repo/branch
 DOMAINSCANREPO="https://github.com/18F/domain-scan"
-BRANCH="tspencer/200scanner"
+BRANCH="tspencer/expanded200scanner"
 
 # How many days to keep around in the index
 INDEXDAYS=30

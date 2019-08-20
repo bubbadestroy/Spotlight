@@ -119,7 +119,7 @@ def get200query(indexbase, my200page, agency, domaintype, mimetype, query):
 		if my200page == ' all pages':
 			s = s.query("simple_query_string", query=query)
 		else:
-			field = 'data.' + deperiodize(my200page) + '.' + status_code
+			field = 'data.' + deperiodize(my200page) + '.status_code'
 			s = s.query("simple_query_string", query=query, fields=[field])
 		if agency != 'all agencies':
 			agencyquery = '"' + agency + '"'
@@ -288,10 +288,13 @@ def search200(request):
 		my200page = ' all pages'
 	s = Search(using=es, index=index).query().params(terminate_after=1)
 	pagemap = {}
-	for i in s.scan():
-			for z in i.data.to_dict().keys():
-				pagemap[periodize(z)] = 1
-	my200pages = list(pagemap.keys())
+	try:
+		for i in s.scan():
+				for z in i.data.to_dict().keys():
+					pagemap[periodize(z)] = 1
+		my200pages = list(pagemap.keys())
+	except:
+		my200pages = []
 	my200pages.insert(0, ' all pages')
 
 	# search in ES for result codes we can select
@@ -299,13 +302,16 @@ def search200(request):
 	if resultcode == None:
 		resultcode = ' all resultcodes'
 	s = Search(using=es, index=index).query().source(['data.*'])
-	resultcodemap = {}
-	for i in s.scan():
-			for k,v in i.data.to_dict().items():
-				resultcodemap[v.status_code] = 1
-	# make sure everybody is a string, then sort it
-	resultcodes = list(map(str, resultcodemap.keys()))
-	resultcodes.sort()
+	try:
+		resultcodemap = {}
+		for i in s.scan():
+				for k,v in i.data.to_dict().items():
+					resultcodemap[v.status_code] = 1
+		# make sure everybody is a string, then sort it
+		resultcodes = list(map(str, resultcodemap.keys()))
+		resultcodes.sort()
+	except:
+		resultcodes = []
 	resultcodes.insert(0, ' all resultcodes')
 
 	# get the agencies/domaintypes
@@ -531,10 +537,13 @@ def searchUSWDScsv(request):
 def getListFromFields(index, field):
 	s = Search(using=es, index=index).query().source([field])
 	valuemap = {}
-	for i in s.scan():
-	        valuemap[i[field]] = 1
-	values = list(valuemap.keys())
-	values.sort()
+	try:
+		for i in s.scan():
+		        valuemap[i[field]] = 1
+		values = list(valuemap.keys())
+		values.sort()
+	except:
+		values = []
 	return values
 
 
