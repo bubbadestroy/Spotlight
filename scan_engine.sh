@@ -67,6 +67,12 @@ wget -O /tmp/domains.csv https://github.com/GSA/data/raw/master/dotgov-domains/c
 # XXX temporary scan some more domains
 wget -O /tmp/moredomains.csv https://pulse.cio.gov/data/hosts/https.csv
 
+# generate even more domains!
+for i in /tmp/domains.csv /tmp/moredomains.csv ; do
+	head -1 "$i" > "$i.extra.csv"
+	grep -Ev '^"*Domain[ "]' "$i" | awk -F, '{printf("data.%s\ndeveloper.%s\ndevelopers.%s\nopen.%s\n",$1,$1,$1,$1)}' | tr -d \" >> "$i.extra.csv"
+done
+
 # execute the scans
 echo -n "Scan start: "
 date
@@ -85,6 +91,16 @@ fi
 
 # XXX temporary scan some more domains
 if ./scan /tmp/moredomains.csv --scan="$SCANLIST" ; then
+	echo "scan of $SCANLIST successful"
+else
+	echo "scan of $SCANLIST errored out for some reason"
+fi
+if ./scan /tmp/moredomains.csv.extra.csv --scan="$SCANLIST" ; then
+	echo "scan of $SCANLIST successful"
+else
+	echo "scan of $SCANLIST errored out for some reason"
+fi
+if ./scan /tmp/moredomains.csv.extra.csv --scan="$SCANLIST" ; then
 	echo "scan of $SCANLIST successful"
 else
 	echo "scan of $SCANLIST errored out for some reason"
