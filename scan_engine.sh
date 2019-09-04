@@ -9,7 +9,6 @@
 
 # This is where you add more scan types
 SCANTYPES="
-	uswds2
 	200scanner
 "
 
